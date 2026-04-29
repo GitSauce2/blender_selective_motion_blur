@@ -1,0 +1,15 @@
+schema_version = "1.0.0"
+id = "selective_motion_blur"
+name = "Selective Motion Blur"
+version = "0.5.0"
+tagline = "Individual object motion blurring for EEVEE"
+maintainer = "SauceBees"
+type = "add-on"
+tags = ["Render"]
+blender_version_min = "5.0.0"
+license = ["SPDX:GPL-3.0-or-later"]
+website = "https://github.com/GitSauce2/blender_selective_motion_blur"
+copyright = ["2026 SauceBees"]
+
+[permissions]
+files = "Saves media files to the output path"
