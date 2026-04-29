@@ -48,6 +48,8 @@ Render buttons are also available in Render Properties.
 
 - **Enable Selective Motion Blur** - Enable the addon. Otherwise use the normal render method
 
+- Render Image & Animation Buttons
+
 ### Object Properties
 
 - **Motion Blur** - Enable or disable motion blur for this specific object. Blurs caused by camera movement still apply
