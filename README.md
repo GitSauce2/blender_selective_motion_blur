@@ -10,11 +10,12 @@ Supports grease pencil motion blurring introduced in Blender Version 5.0+
 
 This addon is in its **EARLY BETA** stage. Recommended to save before rendering.
 
-1. The viewport must be frozen while rendering.
-2. Non motion-blur objects must have their instances realized, otherwise the instances won't render.
-3. Modified, but not set, keyframes will be lost on render.
-4. When Alt Render is enabled, GPU backend must be set to 'OpenGL'. Vulkan has a VRAM stacking issue. (Toggleable)
-5. This addon may be incompatible with other addons that add object properties which affect the render.
+1. The addon only works in its built-in renders.
+2. The viewport must be frozen while rendering.
+3. Non motion-blur objects must have their instances realized, otherwise the instances won't render.
+4. Modified, but not set, keyframes will be lost on render.
+5. When Alt Render is enabled, GPU backend must be set to 'OpenGL'. Vulkan has a VRAM stacking issue. (Toggleable)
+6. This addon may be incompatible with other addons that add object properties which affect the render.
 
 Expect a slight delay before each frame that increases with every object set to not motion blur.
 
