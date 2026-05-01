@@ -1,5 +1,8 @@
 import bpy
 import time
+
+from bpy.types import Operator
+
 from .render.pre import SMB_pre
 from .render.post import SMB_post, cleanup_post
 from .func import print_status
@@ -70,7 +73,7 @@ def end_anim_report(self, render_time, start_frame, end_frame, step_frame):
 
 # Render Image
 # Note that pre handlers are not reliable because this script modifies data.
-class render_OT_Image(bpy.types.Operator):
+class render_OT_Image(Operator):
     """Render an Image using Selective Motion Blur. This will reset modified, but not set, keyframes"""
     bl_idname = "render.smb_img"
     bl_label = "Render Image SMB"
@@ -93,7 +96,7 @@ class render_OT_Image(bpy.types.Operator):
                 
                 scene.frame_set(scene.frame_current) # Reset frame
                 
-                delete_lib, org_lib = SMB_pre()
+                delete_lib, org_lib, del_mat_lib = SMB_pre()
                     
                 print_status("<Rendering Image...>")
 
@@ -102,7 +105,7 @@ class render_OT_Image(bpy.types.Operator):
                     if not bpy.app.is_job_running('RENDER') and (render_complete or render_cancel) or not invoke:
                         
                         print_status("<Finalizing...>" if not render_cancel else "<Cancelling...>")
-                        SMB_post(delete_lib, org_lib)
+                        SMB_post(delete_lib, org_lib, del_mat_lib)
                         cleanup_post(li)
                         
                         # Calculate stats and give report.
@@ -147,7 +150,7 @@ class render_OT_Image(bpy.types.Operator):
     
 # Render Animation
 # Note that pre handlers are not reliable because this script modifies data.
-class render_OT_Anim(bpy.types.Operator):
+class render_OT_Anim(Operator):
     """Render an Animation using Selective Motion Blur. This will reset modified, but not set, keyframes"""
     bl_idname = "render.smb_anim"
     bl_label = "Render Animation SMB"
@@ -184,13 +187,13 @@ class render_OT_Anim(bpy.types.Operator):
                 print_status("")
                 i = end_frame - start_frame + 1
                     
-                def anim_method(i, delete_lib, org_lib, tframe_start):
+                def anim_method(i, delete_lib, org_lib, del_mat_lib, tframe_start):
                     global render_complete, render_cancel
                     if not bpy.app.is_job_running('RENDER') and (render_complete or render_cancel):
                     
                         current_frame = scene.frame_current
                         
-                        SMB_post(delete_lib, org_lib)
+                        SMB_post(delete_lib, org_lib, del_mat_lib)
                         
                         end_time = time.perf_counter()
                         render_time = end_time - start_time
@@ -240,7 +243,7 @@ class render_OT_Anim(bpy.types.Operator):
                     
                     tframe_start = time.perf_counter()
                     
-                    delete_lib, org_lib, = SMB_pre()
+                    delete_lib, org_lib, del_mat_lib = SMB_pre()
                         
                     print_status("<Rendering...>") # Use animation=True instead of write_still=True because
                                                    # write_still saves in the next render if the render op
@@ -261,7 +264,7 @@ class render_OT_Anim(bpy.types.Operator):
                         scene.frame_start = start_frame
                         scene.frame_end = end_frame
                         
-                        bpy.app.timers.register(lambda: anim_method(i, delete_lib, org_lib, tframe_start)) # Use timers instead of post handlers because handlers MAY cause external addon errors
+                        bpy.app.timers.register(lambda: anim_method(i, delete_lib, org_lib, del_mat_lib, tframe_start)) # Use timers instead of post handlers because handlers MAY cause external addon errors
                         
                     else: # Use non-invoke method
                         scene.frame_start = current_frame
@@ -270,7 +273,7 @@ class render_OT_Anim(bpy.types.Operator):
                         scene.frame_start = start_frame
                         scene.frame_end = end_frame
                         
-                        SMB_post(delete_lib, org_lib)
+                        SMB_post(delete_lib, org_lib, del_mat_lib)
                         
                         tframe_end = time.perf_counter()
                         
