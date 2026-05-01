@@ -2,17 +2,21 @@ import bpy
 from ..func import dr_fc_enabler
 
 # Function for post-render.
-def SMB_post(delete_lib, org_lib):
+def SMB_post(delete_lib, org_lib, del_mat_lib):
     scene = bpy.context.scene
     bdata = bpy.data
     motion_blur = scene.render.use_motion_blur
     shutter = scene.render.motion_blur_shutter
     
+    # Delete materials created by the script.
+    for mat in del_mat_lib:
+        bdata.materials.remove(mat)
+    
     # Library for deleting data.
     datalib = []
     
     for sublist in delete_lib:
-        obj = bdata.objects[sublist[0]]
+        obj = sublist[0]
         
         # Store this object's data. If not empty.
         if obj.data:
@@ -20,8 +24,7 @@ def SMB_post(delete_lib, org_lib):
         
         # If this object is a duped camera, switch the active camera back to the original camera. (Only active cams are duped)
         if sublist[2]:
-            target_cam = bdata.objects[sublist[2]]
-            scene.camera = target_cam
+            scene.camera = sublist[2]
         
         # Delete the object.
         bdata.objects.remove(obj, do_unlink=True)
@@ -38,12 +41,19 @@ def SMB_post(delete_lib, org_lib):
             
     # Reenable render for original objects.
     for sublist in org_lib:
-        obj = bdata.objects[sublist[0]]
+        obj = sublist[0]
         
         if sublist[1]:
             obj.hide_render = False
         
         dr_fc_enabler(sublist[2], sublist[3])
+        
+        for mat_sub in sublist[4]:
+            org_mat = mat_sub[0]
+            dup_mat = mat_sub[1]
+            
+            obj.material_slots[mat_sub[2]].material = org_mat
+            bdata.materials.remove(dup_mat)
     
 def cleanup_post(li, original_frame=None):
     scene = bpy.context.scene
