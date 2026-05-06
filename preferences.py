@@ -41,6 +41,11 @@ class SelectiveMotionBlur_preferences(AddonPreferences):
                                description='Report the render in the form of a UI box',
                                )
                                
+    solve_matbug : BoolProperty(name="Solve Motion Blur Material Bug",
+                               default=False,
+                               description="Solves a Blender bug that potentially* causes incorrect motion blur if there are two objects sharing the same material and the objects are in separate collections. Does not solve objects without materials, because they don't have materials. Doubles used materials during render, so it could potentially use a lot of memory",
+                               )
+                               
     def draw(self, context):
         layout = self.layout
         col = layout.column()
@@ -72,3 +77,5 @@ class SelectiveMotionBlur_preferences(AddonPreferences):
         row.prop(self, "print_status")
         row = col.row()
         row.prop(self, "give_report")
+        row = col.row()
+        row.prop(self, "solve_matbug")

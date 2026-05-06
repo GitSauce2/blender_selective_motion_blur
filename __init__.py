@@ -17,7 +17,7 @@
 bl_info = {
     "name" : "Selective Motion Blur",
     "author" : "SauceBees",
-    "version" : (0, 5, 0),
+    "version" : (0, 6, 0),
     "blender" : (5, 0, 0),
     "location" : "Object/Render Properties > Selective Motion Blur Options",
     "description" : "Individual object motion blurring for EEVEE.",
@@ -29,11 +29,13 @@ bl_info = {
 
 import bpy
 from .preferences import SelectiveMotionBlur_preferences
-from .properties import smb_main_properties, smb_object_properties
+from .properties import smb_main_properties, smb_object_properties, smb_parent_props
 from .operators import render_OT_Image, render_OT_Anim
-from .ui import SelectiveMotionBlurMain_PT_ui, SelectiveMotionBlur_PT_ui
+from .sub_op import smb_OT_parent_additem, smb_OT_parent_deleteitem, smb_OT_parent_moveitem
+from .ui import SelectiveMotionBlurMain_PT_ui, SMB_UL_parent_list, SelectiveMotionBlur_PT_ui, SelectiveMotionBlur_PT_parent_slots
 
-from bpy.props import PointerProperty
+from bpy.types import Scene, Object
+from bpy.props import PointerProperty, CollectionProperty, IntProperty
 
 ### REGISTER ###
 
@@ -41,10 +43,16 @@ classes = (
     SelectiveMotionBlur_preferences,
     smb_main_properties,
     smb_object_properties,
+    smb_parent_props,
+    SMB_UL_parent_list,
     SelectiveMotionBlurMain_PT_ui,
     SelectiveMotionBlur_PT_ui,
+    SelectiveMotionBlur_PT_parent_slots,
     render_OT_Image,
     render_OT_Anim,
+    smb_OT_parent_additem,
+    smb_OT_parent_deleteitem,
+    smb_OT_parent_moveitem,
 )
 
 addon_keymaps = []
@@ -53,8 +61,10 @@ def register():
     for cls in classes:
         bpy.utils.register_class(cls)
         
-    bpy.types.Scene.select_motion_blur = PointerProperty(type= smb_main_properties)
-    bpy.types.Object.select_motion_blur = PointerProperty(type= smb_object_properties)
+    Scene.select_motion_blur = PointerProperty(type= smb_main_properties)
+    Object.select_motion_blur = PointerProperty(type= smb_object_properties)
+    Object.smb_parent_obj = CollectionProperty(type= smb_parent_props)
+    Object.smb_parent_index = IntProperty(name = "SMB Parent Slot", default= 0)
     
     key_config = bpy.context.window_manager.keyconfigs.addon
     
@@ -78,8 +88,10 @@ def unregister():
     for cls in classes:
         bpy.utils.unregister_class(cls)
         
-    del bpy.types.Scene.select_motion_blur
-    del bpy.types.Object.select_motion_blur
+    del Scene.select_motion_blur
+    del Object.select_motion_blur
+    del Object.smb_parent_obj
+    del Object.smb_parent_index
     
     for key_map, key_image, key_anim in addon_keymaps:
         key_map.keymap_items.remove(key_image)

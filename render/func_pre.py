@@ -1,6 +1,8 @@
 import bpy
 from ..func import driver_disabler, fcurve_disabler, dr_fc_enabler
-                
+
+from mathutils import Matrix
+
 def mesh_mod(obj, modlist, mod, attr, t_attr, path):
     modlist.append(getattr(mod, attr))
     
@@ -174,3 +176,58 @@ def remove_gpkeys(dup_obj):
                         layer.frames.remove(previous_frame)
                         
                 break
+
+def parent_slots(obj, dup_obj):
+    for parent_index in obj.smb_parent_obj:
+        enable = parent_index.parent_enable
+        target_parent = parent_index.target_parent
+        
+        if enable and target_parent and target_parent != obj:
+            dup_obj.parent = target_parent
+            
+            target_bone = parent_index.target_bone
+            if target_parent.type == 'ARMATURE' and target_bone:
+                try:
+                    bone = target_parent.pose.bones[target_bone]
+                    
+                    for scale_index in bone.scale:
+                        if scale_index == 0:
+                            print(f'ERR - {obj.name}: "{bone.name}" bone has a scale value of {scale_index}! Using "{target_parent.name}" armature instead.')
+                            break
+                    
+                    else:
+                        dup_obj.parent_type = 'BONE'
+                        dup_obj.parent_bone = target_bone
+                        
+                        loc, rot, scale = bone.matrix.decompose() # Object follows bone tail. Offset to head.
+                        
+                        eval = bone.tail - bone.head
+
+                        loc[0] += eval[0]
+                        loc[1] += eval[1]
+                        loc[2] += eval[2]
+
+                        new_matrix = Matrix.LocRotScale(loc, rot, scale)
+                        
+                        dup_obj.matrix_parent_inverse = (target_parent.matrix_world @ new_matrix).inverted()
+                        break
+                except:
+                    print(f'Error Setting "{obj.name}" Parent: Does the "{target_bone}" bone exist on the "{target_parent.name}" armature?')
+            
+            dup_obj.parent_type = 'OBJECT'
+            dup_obj.matrix_parent_inverse = target_parent.matrix_world.inverted()
+            
+            break
+
+# Make copies of materials to prevent motion blur bug. Does not solve objects without materials
+def dupe_mats(obj):
+    mat_sublist = []
+    for slot in obj.material_slots:
+        if slot.material:
+            dup_mat = slot.material.copy()
+            
+            org_mat = slot.material
+            slot.material = dup_mat
+            mat_sublist.append([org_mat, dup_mat, slot.slot_index])
+    
+    return mat_sublist
