@@ -22,8 +22,8 @@ bl_info = {
     "location" : "Object/Render Properties > Selective Motion Blur Options",
     "description" : "Individual object motion blurring for EEVEE.",
     "warning" : "",
-    "wiki_url" : "https://github.com/GitSauce2/blender_selective_motion_blur",
-    "tracker_url" : "https://github.com/GitSauce2/blender_selective_motion_blur",
+    "wiki_url" : "https://github.com/GitSauce2/selective_motion_blur",
+    "tracker_url" : "https://github.com/GitSauce2/selective_motion_blur",
     "category" : "",
 }
 
