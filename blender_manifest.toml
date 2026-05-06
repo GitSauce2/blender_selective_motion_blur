@@ -8,7 +8,7 @@ type = "add-on"
 tags = ["Render"]
 blender_version_min = "5.0.0"
 license = ["SPDX:GPL-3.0-or-later"]
-website = "https://github.com/GitSauce2/blender_selective_motion_blur"
+website = "https://github.com/GitSauce2/selective_motion_blur"
 copyright = ["2026 SauceBees"]
 
 [permissions]

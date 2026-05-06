@@ -19,7 +19,7 @@ This addon is in its **EARLY BETA** stage. Recommended to save before rendering.
 
 Expect a slight delay before each frame that increases with every object set to not motion blur. The time this addon records includes this delay, as well as the time it takes to write a render.
 
-Report any issues [here](https://github.com/GitSauce2/blender_selective_motion_blur/issues)
+Report any issues [here](https://github.com/GitSauce2/selective_motion_blur/issues)
 
 ## Default Keybinds
 
@@ -62,7 +62,7 @@ Render buttons are also available in Render Properties.
 1. Console spam when rendering a curve with a greasepencil lineart modifier in the same scene. This also occurs when using the normal render and the curve is set to not render.
 2. Console spam when rendering a metaball mother that is globally hidden in viewports. This also occurs when the metaball mother becomes globally hidden, or any other object becomes globally hidden while the metaball mother is globally hidden.
 
-Report any issues [here](https://github.com/GitSauce2/blender_selective_motion_blur/issues)
+Report any issues [here](https://github.com/GitSauce2/selective_motion_blur/issues)
 
 ## License
 This addon's code derives from Blender's Source Code and is licensed under the GNU General Public License v3.0.
